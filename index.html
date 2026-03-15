@@ -10,193 +10,275 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800&display=swap');
         
-        body {
-            font-family: 'Assistant', sans-serif;
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
-            min-height: 100vh;
-            color: #1f2937;
+        :root {
+            --primary: #1e293b;
+            --secondary: #334155;
+            --accent: #3b82f6;
         }
 
-        @keyframes gradient {
+        body {
+            font-family: 'Assistant', sans-serif;
+            background: linear-gradient(-45deg, #1e293b, #334155, #1e293b, #0f172a);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            min-height: 100vh;
+            color: #f1f5f9;
+        }
+
+        @keyframes gradientBG {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(12px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 2rem;
         }
 
         .glass-card:hover {
-            transform: translateY(-8px) scale(1.01);
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(59, 130, 246, 0.4);
         }
 
         .code-block {
-            background: #0f172a;
-            color: #e2e8f0;
+            background: #020617;
+            color: #94a3b8;
             padding: 1.5rem;
-            border-radius: 12px;
-            font-family: 'Fira Code', 'Courier New', monospace;
+            border-radius: 16px;
+            font-family: 'Fira Code', monospace;
             direction: ltr;
             overflow-x: auto;
             position: relative;
-            border: 1px solid #334155;
+            border: 1px solid #1e293b;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+            margin-top: 1rem;
         }
 
         .copy-btn {
             position: absolute;
             top: 0.75rem;
             right: 0.75rem;
-            background: #6366f1;
+            background: #3b82f6;
             color: white;
             padding: 0.4rem 1rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
+            opacity: 0.8;
             z-index: 10;
         }
 
-        .copy-btn:hover { background: #4f46e5; }
+        .copy-btn:hover { opacity: 1; transform: scale(1.05); }
 
-        .step-badge {
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            color: white;
-            width: 45px;
-            height: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .step-num {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            width: 45px; height: 45px;
             border-radius: 14px;
-            font-weight: 800;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            flex-shrink: 0;
         }
 
-        .instruction-highlight {
-            background: #eff6ff;
-            border-right: 4px solid #3b82f6;
-            padding: 1rem;
+        .dictionary-item {
+            background: rgba(16, 185, 129, 0.1);
+            border-right: 3px solid #10b981;
+            padding: 0.75rem;
             border-radius: 0 8px 8px 0;
-            margin: 1rem 0;
         }
 
-        pre { margin: 0; }
+        .click-guide {
+            color: #60a5fa;
+            font-weight: bold;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        .highlight-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-right: 4px solid #3b82f6;
+            padding: 1.25rem;
+            border-radius: 0 12px 12px 0;
+            margin: 1.5rem 0;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
     </style>
 </head>
-<body class="py-12 px-4 sm:px-6">
+<body class="py-12 px-4 selection:bg-blue-500/30">
 
     <div class="max-w-4xl mx-auto">
-        <!-- Header -->
-        <div class="text-center mb-16 animate__animated animate__fadeInDown">
-            <div class="inline-block p-3 bg-white/30 rounded-full mb-4 backdrop-blur-md">
-                <i data-lucide="phone-call" class="w-12 h-12 text-white"></i>
+        
+        <!-- Hero Header -->
+        <header class="text-center mb-16 animate__animated animate__fadeIn">
+            <div class="inline-flex p-4 bg-blue-500/10 rounded-3xl mb-6 animate__animated animate__pulse animate__infinite">
+                <i data-lucide="refresh-cw" class="w-12 h-12 text-blue-400"></i>
             </div>
-            <h1 class="text-5xl font-extrabold text-white mb-4 drop-shadow-lg">סנכרון ימות המשיח & Google Sheets</h1>
-            <p class="text-xl text-white/90 font-light">מדריך פריסה שלם למערכת ניהול תוכן טלפונית</p>
-        </div>
+            <h1 class="text-5xl md:text-6xl font-black mb-6 tracking-tight">
+                סנכרון <span class="text-blue-400">ימות המשיח</span><br>עם Google Sheets
+            </h1>
+            <p class="text-xl text-slate-400 max-w-2xl mx-auto font-light leading-relaxed">
+                מדריך מפורט למתחילים - פריסת מערכת מקצה לקצה <br>כולל הסברים בעברית וקטעי קוד מוכנים.
+            </p>
+        </header>
 
-        <!-- System Architecture -->
-        <div class="glass-card p-8 mb-10 animate__animated animate__fadeIn">
+        <!-- Dictionary (מילון למתחילים) -->
+        <section class="glass-card p-8 mb-12 animate__animated animate__fadeInLeft">
             <div class="flex items-center gap-3 mb-6">
-                <i data-lucide="info" class="text-indigo-600"></i>
-                <h2 class="text-2xl font-bold text-gray-800">איך זה עובד?</h2>
+                <i data-lucide="languages" class="text-emerald-400"></i>
+                <h2 class="text-2xl font-bold">מילון מונחים (למי שלא יודע אנגלית)</h2>
             </div>
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="p-6 rounded-2xl bg-indigo-50 border border-indigo-100 flex flex-col items-center text-center">
-                    <div class="w-12 h-12 bg-indigo-600 text-white rounded-full flex items-center justify-center mb-4">
-                        <i data-lucide="mic"></i>
-                    </div>
-                    <h3 class="font-bold text-lg mb-2">קלט (Input)</h3>
-                    <p class="text-sm text-gray-600 leading-relaxed">המתקשר מקליד נתונים בטלפון, המערכת שולחת אותם לשרת ה-API והם נשמרים אוטומטית בגיליון גוגל.</p>
-                </div>
-                <div class="p-6 rounded-2xl bg-emerald-50 border border-emerald-100 flex flex-col items-center text-center">
-                    <div class="w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center mb-4">
-                        <i data-lucide="volume-2"></i>
-                    </div>
-                    <h3 class="font-bold text-lg mb-2">פלט (Output)</h3>
-                    <p class="text-sm text-gray-600 leading-relaxed">המערכת מחפשת בגיליון לפי מזהה ומקריאה למתקשר את התוכן שנמצא בזמן אמת.</p>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+                <div class="dictionary-item"><b>Deploy:</b> הפעלה של המערכת לאוויר.</div>
+                <div class="dictionary-item"><b>Repository:</b> תיקיית הפרויקט בגיטאהב.</div>
+                <div class="dictionary-item"><b>Settings:</b> הגדרות.</div>
+                <div class="dictionary-item"><b>Create:</b> יצירה של משהו חדש.</div>
+                <div class="dictionary-item"><b>Keys:</b> מפתחות אבטחה.</div>
+                <div class="dictionary-item"><b>Value:</b> הערך שצריך להכניס.</div>
             </div>
+        </section>
+
+        <!-- Step 1 -->
+        <div class="glass-card p-8 animate__animated animate__fadeInUp">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="step-num">01</div>
+                <h3 class="text-2xl font-bold">הכנת גיליון גוגל (Sheets)</h3>
+            </div>
+            <ol class="space-y-4 text-slate-300 mr-4 list-decimal list-inside">
+                <li>פתחו גיליון Google Sheets חדש.</li>
+                <li>בשורה 1 כתבו: <span class="text-white font-mono bg-white/10 px-2 rounded">ID</span> במשבצת הראשונה, ו-<span class="text-white font-mono bg-white/10 px-2 rounded">Content</span> בשנייה.</li>
+                <li>העתיקו מהכתובת למעלה את ה-ID של הגיליון (זהו רצף האותיות הארוך שבין ה-/d/ לבין ה-/edit). שמרו אותו בצד.</li>
+            </ol>
         </div>
 
-        <!-- Workflow Steps -->
-        <div class="space-y-8">
-            
-            <!-- Step 1 -->
-            <div class="glass-card p-8 animate__animated animate__fadeInUp">
-                <div class="flex items-center gap-4 mb-6">
-                    <div class="step-badge">01</div>
-                    <h3 class="text-2xl font-bold">הכנת בסיס הנתונים</h3>
-                </div>
-                <div class="flex gap-4">
-                    <i data-lucide="table-2" class="text-indigo-500 w-6 h-6 flex-shrink-0"></i>
-                    <div>
-                        <p class="text-gray-700 leading-relaxed">צרו גיליון Google Sheets חדש. בשורה הראשונה (כותרות) כתבו בדיוק רב:</p>
-                        <div class="flex gap-2 mt-3">
-                            <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-md font-bold">ID</span>
-                            <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-md font-bold">Content</span>
-                        </div>
-                    </div>
-                </div>
+        <!-- Step 2 -->
+        <div class="glass-card p-8 animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="step-num">02</div>
+                <h3 class="text-2xl font-bold">הגדרות Google Cloud (חיבור הרובוט)</h3>
             </div>
-
-            <!-- Step 2 -->
-            <div class="glass-card p-8 animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
-                <div class="flex items-center gap-4 mb-6">
-                    <div class="step-badge">02</div>
-                    <h3 class="text-2xl font-bold">חיבור ל-Google Cloud</h3>
-                </div>
-                <div class="instruction-highlight space-y-3">
-                    <div class="flex gap-2 items-start text-blue-800">
-                        <i data-lucide="check-circle-2" class="w-5 h-5 mt-1"></i>
-                        <span>צרו פרויקט ב-Google Cloud Console והפעילו <b>Google Sheets API</b>.</span>
-                    </div>
-                    <div class="flex gap-2 items-start text-blue-800">
-                        <i data-lucide="check-circle-2" class="w-5 h-5 mt-1"></i>
-                        <span>צרו <b>Service Account</b> והורידו את קובץ המפתח (JSON).</span>
-                    </div>
-                    <div class="flex gap-2 items-start text-blue-800">
-                        <i data-lucide="share-2" class="w-5 h-5 mt-1"></i>
-                        <span>שתפו את הגיליון עם כתובת המייל של חשבון השירות בהרשאת <b>עורך</b>.</span>
-                    </div>
-                </div>
+            <div class="highlight-box text-slate-200 text-sm leading-relaxed mb-4">
+                כאן אנחנו יוצרים "חשבון שירות" (רובוט) שיוכל לכתוב בגיליון שלכם.
             </div>
+            <ol class="space-y-3 text-slate-300 mr-4 list-decimal list-inside">
+                <li>היכנסו ל-Google Cloud Console וצרו פרויקט חדש.</li>
+                <li>חפשו <b>Google Sheets API</b> ולחצו על <span class="click-guide">Enable</span>.</li>
+                <li>תחת <b>IAM & Admin</b> עברו ל-<b>Service Accounts</b> וצרו חשבון חדש.</li>
+                <li>בלשונית <span class="click-guide">Keys</span> לחצו על <b>Add Key</b> ואז <b>Create New Key</b> בפורמט <b>JSON</b>.</li>
+                <li><b>חשוב:</b> קובץ יירד למחשב. פתחו אותו בכתבן (Notepad) - נצטרך את כל מה שכתוב בו ל-Vercel.</li>
+                <li>העתיקו את כתובת המייל של החשבון שיצרתם, לכו לגיליון שלכם ולחצו על "שיתוף" (Share) והוסיפו את המייל הזה כ-Editor.</li>
+            </ol>
+        </div>
 
-            <!-- Step 3: Files -->
-            <div class="glass-card p-8 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
-                <div class="flex items-center gap-4 mb-8">
-                    <div class="step-badge">03</div>
-                    <h3 class="text-2xl font-bold">קבצי הקוד (GitHub)</h3>
+        <!-- Step 3: THE CODE (GitHub) -->
+        <div class="glass-card p-8 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="step-num">03</div>
+                <h3 class="text-2xl font-bold">העלאת הקוד ל-GitHub</h3>
+            </div>
+            <p class="text-slate-300 mb-6">צרו Repository חדש בגיטאהב והעלו לתוכו את הקבצים הבאים (שימו לב לשמות המדויקים):</p>
+
+            <div class="space-y-12">
+                <!-- public/index.html -->
+                <div>
+                    <div class="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
+                        <span class="text-blue-400 font-mono text-sm flex items-center gap-2">
+                            <i data-lucide="file-code" class="w-4 h-4"></i> public/index.html
+                        </span>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)">העתק</button>
+                        <pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="he" dir="rtl"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;מערכת ניהול טקסטים - ימות המשיח&lt;/title&gt;
+    &lt;style&gt;
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        h2 { text-align: center; color: #333; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
+        input[type="text"], textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-family: inherit; }
+        textarea { height: 120px; resize: vertical; }
+        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; transition: background-color 0.3s; }
+        button:hover { background-color: #0056b3; }
+        #message { margin-top: 15px; padding: 10px; border-radius: 5px; text-align: center; display: none; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class="container"&gt;
+    &lt;h2&gt;הוספת טקסט למערכת&lt;/h2&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="textId"&gt;מזהה טקסט (ID):&lt;/label&gt;
+        &lt;input type="text" id="textId" placeholder="הקלד מזהה ייחודי..."&gt;
+    &lt;/div&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="textContent"&gt;תוכן הטקסט:&lt;/label&gt;
+        &lt;textarea id="textContent" placeholder="הקלד כאן את הטקסט..."&gt;&lt;/textarea&gt;
+    &lt;/div&gt;
+    &lt;button onclick="submitText()"&gt;שמור בגיליון&lt;/button&gt;
+    &lt;div id="message"&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;script&gt;
+    async function submitText() {
+        const idInput = document.getElementById('textId').value;
+        const contentInput = document.getElementById('textContent').value;
+        const messageDiv = document.getElementById('message');
+        if (!idInput || !contentInput) { showMessage('נא למלא את כל השדות!', 'error'); return; }
+        try {
+            const response = await fetch('/api/addText', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: idInput, content: contentInput })
+            });
+            const result = await response.json();
+            if (response.ok) {
+                showMessage('הטקסט נשמר בהצלחה!', 'success');
+                document.getElementById('textId').value = ''; document.getElementById('textContent').value = '';
+            } else { showMessage('שגיאה: ' + result.error, 'error'); }
+        } catch (error) { showMessage('שגיאת תקשורת עם השרת.', 'error'); }
+    }
+    function showMessage(text, type) {
+        const m = document.getElementById('message');
+        m.textContent = text; m.className = type; m.style.display = 'block';
+    }
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+                    </div>
                 </div>
-                
-                <p class="mb-6 text-gray-600">יש להעלות את הקבצים הבאים למאגר ה-GitHub שלכם. הקוד נשמר נאמן למקור שהעליתם:</p>
 
-                <!-- File Block -->
-                <div class="space-y-10">
-                    <div>
-                        <div class="flex items-center gap-2 mb-3 text-indigo-600 font-bold">
-                            <i data-lucide="file-code" class="w-5 h-5"></i>
-                            <span>server.js</span>
-                        </div>
-                        <div class="code-block">
-                            <button class="copy-btn" onclick="copyCode(this)">העתק קוד</button>
-                            <pre>const express = require('express');
+                <!-- server.js -->
+                <div>
+                    <div class="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
+                        <span class="text-blue-400 font-mono text-sm flex items-center gap-2">
+                            <i data-lucide="server" class="w-4 h-4"></i> server.js
+                        </span>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)">העתק</button>
+                        <pre>const express = require('express');
 const cors = require('cors');
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 const { JWT } = require('google-auth-library');
 const path = require('path');
 
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -207,7 +289,7 @@ const GOOGLE_SERVICE_ACCOUNT = process.env.GOOGLE_SERVICE_ACCOUNT;
 
 async function getDoc() {
     if (!GOOGLE_SERVICE_ACCOUNT || !SHEET_ID) {
-        throw new Error("חסרים נתוני התחברות לגוגל (SHEET_ID או GOOGLE_SERVICE_ACCOUNT)");
+        throw new Error("חסרים נתוני התחברות לגוגל");
     }
     const credentials = JSON.parse(GOOGLE_SERVICE_ACCOUNT);
     const serviceAccountAuth = new JWT({
@@ -229,24 +311,20 @@ app.all('/api/addText', async (req, res) => {
         const sheet = doc.sheetsByIndex[0];
         await sheet.addRow({ ID: id, Content: content });
         res.json({ success: true, message: "הטקסט נשמר בהצלחה!" });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+    } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
 app.get('/api/getText', async (req, res) => {
     try {
         const { id } = req.query;
-        if (!id) return res.status(400).json({ error: "לא נשלח מזהה לחיפוש" });
+        if (!id) return res.status(400).json({ error: "לא נשלח מזהה" });
         const doc = await getDoc();
         const sheet = doc.sheetsByIndex[0];
         const rows = await sheet.getRows();
         const row = rows.find(r => r.get('ID') === String(id));
         if (row) res.json({ id: row.get('ID'), content: row.get('Content') });
         else res.status(404).json({ error: "הטקסט לא נמצא" });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+    } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
 app.all('/api/ymotAddText', async (req, res) => {
@@ -258,9 +336,7 @@ app.all('/api/ymotAddText', async (req, res) => {
         const sheet = doc.sheetsByIndex[0];
         await sheet.addRow({ ID: id, Content: content });
         res.send("id_list_message=t-הנתונים נשמרו בהצלחה למערכת");
-    } catch (error) {
-        res.send("id_list_message=t-חלה שגיאה בשמירת הנתונים");
-    }
+    } catch (error) { res.send("id_list_message=t-חלה שגיאה בשמירת הנתונים"); }
 });
 
 app.get('/api/ymotGetText', async (req, res) => {
@@ -273,23 +349,24 @@ app.get('/api/ymotGetText', async (req, res) => {
         const row = rows.find(r => r.get('ID') === String(id));
         if (row) res.send(`id_list_message=t-${row.get('Content')}`);
         else res.send("id_list_message=t-המזהה לא נמצא באקסל");
-    } catch (error) {
-        res.send("id_list_message=t-חלה שגיאת מערכת בחיפוש");
-    }
+    } catch (error) { res.send("id_list_message=t-חלה שגיאת מערכת בחיפוש"); }
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 module.exports = app;</pre>
-                        </div>
                     </div>
+                </div>
 
-                    <!-- Simplified JSON files -->
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div class="code-block h-40">
-                            <div class="text-xs text-indigo-300 mb-2">package.json</div>
-                            <pre class="text-xs">
-{
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <span class="text-blue-400 font-mono text-sm block mb-2">package.json</span>
+                        <div class="code-block text-xs">
+                            <pre>{
+  "name": "ymot-texts-api",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
@@ -298,91 +375,103 @@ module.exports = app;</pre>
   }
 }</pre>
                         </div>
-                        <div class="code-block h-40">
-                            <div class="text-xs text-indigo-300 mb-2">vercel.json</div>
-                            <pre class="text-xs">
-{
+                    </div>
+                    <div>
+                        <span class="text-blue-400 font-mono text-sm block mb-2">vercel.json</span>
+                        <div class="code-block text-xs">
+                            <pre>{
   "version": 2,
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/server.js" }
-  ]
+  "builds": [{ "src": "server.js", "use": "@vercel/node" }],
+  "rewrites": [{ "source": "/(.*)", "destination": "/server.js" }]
 }</pre>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Step 4 -->
-            <div class="glass-card p-8 animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
-                <div class="flex items-center gap-4 mb-6">
-                    <div class="step-badge">04</div>
-                    <h3 class="text-2xl font-bold">פריסה ב-Vercel</h3>
-                </div>
-                <div class="bg-amber-50 border-r-4 border-amber-500 p-4 mb-4">
-                    <p class="text-amber-800 font-bold mb-1 italic text-sm">זכרו להגדיר את משתני הסביבה:</p>
-                    <ul class="text-sm list-disc list-inside text-amber-900">
-                        <li><b>SHEET_ID:</b> מזהה הגיליון (מה-URL).</li>
-                        <li><b>GOOGLE_SERVICE_ACCOUNT:</b> תוכן קובץ ה-JSON המלא.</li>
+        <!-- Step 4 -->
+        <div class="glass-card p-8 animate__animated animate__fadeInUp">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="step-num">04</div>
+                <h3 class="text-2xl font-bold">הפצה ב-Vercel (דיפלוי)</h3>
+            </div>
+            <ol class="space-y-4 text-slate-300 mr-4 list-decimal list-inside">
+                <li>התחברו ל-Vercel עם חשבון ה-GitHub שלכם.</li>
+                <li>לחצו על <span class="click-guide">Add New Project</span> וייבאו את המאגר שיצרתם.</li>
+                <li>לפני הלחיצה על Deploy, היכנסו ל-<b>Environment Variables</b> והוסיפו 2 סודות:
+                    <ul class="list-disc list-inside mr-8 mt-2 space-y-2">
+                        <li><code class="text-white">SHEET_ID</code> : המזהה מהשלב הראשון.</li>
+                        <li><code class="text-white">GOOGLE_SERVICE_ACCOUNT</code> : כל הטקסט שמופיע בקובץ ה-JSON (המפתח).</li>
                     </ul>
-                </div>
-            </div>
-
-            <!-- Final Step -->
-            <div class="glass-card p-8 animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
-                <div class="flex items-center gap-4 mb-6">
-                    <div class="step-badge">05</div>
-                    <h3 class="text-2xl font-bold">הגדרות "ימות המשיח"</h3>
-                </div>
-                <div class="space-y-4">
-                    <div class="p-5 bg-white border border-gray-200 rounded-xl">
-                        <span class="text-sm font-bold text-indigo-500 block mb-2 uppercase tracking-wider">שלוחה 1 - הכנסת תוכן</span>
-                        <code class="text-xs break-all text-gray-800 bg-gray-50 p-3 block rounded border">
-                            type=api<br>
-                            api_link=https://YOUR-APP.vercel.app/api/ymotAddText<br>
-                            api_000=new_id,yes,10,1,10,HebrewKeyboard,no,no,no,no,no,no,no,no,yes<br>
-                            api_001=new_content,yes,100,1,10,HebrewKeyboard,no,no,no,no,no,no,no,no,yes
-                        </code>
-                    </div>
-                    <div class="p-5 bg-white border border-gray-200 rounded-xl">
-                        <span class="text-sm font-bold text-emerald-500 block mb-2 uppercase tracking-wider">שלוחה 2 - חיפוש והקראה</span>
-                        <code class="text-xs break-all text-gray-800 bg-gray-50 p-3 block rounded border">
-                            type=api<br>
-                            api_link=https://YOUR-APP.vercel.app/api/ymotGetText<br>
-                            api_000=id_to_search,yes,10,1,10,HebrewKeyboard,no,no,no,no,no,no,no,no,yes
-                        </code>
-                    </div>
-                </div>
-            </div>
-
+                </li>
+                <li>לחצו <span class="click-guide">Deploy</span>. בסיום תקבלו כתובת אתר (למשל: <span class="text-blue-400 font-mono">my-api.vercel.app</span>).</li>
+            </ol>
         </div>
 
-        <!-- Footer -->
-        <div class="text-center mt-16 mb-12 animate__animated animate__fadeIn">
-            <p class="text-white/60 text-sm font-medium tracking-widest uppercase">בס"ד | מערכת סנכרון חכמה v1.0</p>
-            <div class="h-1 w-24 bg-white/20 mx-auto mt-4 rounded-full"></div>
+        <!-- Step 5 -->
+        <div class="glass-card p-8 animate__animated animate__fadeInUp">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="step-num">05</div>
+                <h3 class="text-2xl font-bold">הגדרת השלוחה בימות המשיח</h3>
+            </div>
+            <p class="text-slate-300 mb-6 italic">עברו לניהול הקו שלכם והגדירו בקובץ ext.ini:</p>
+            
+            <div class="space-y-6">
+                <div class="bg-white/5 p-4 rounded-xl">
+                    <h4 class="text-blue-400 font-bold mb-3">שלוחה להכנסת נתונים (API)</h4>
+                    <div class="code-block text-xs">
+                        <pre>type=api
+api_link=https://YOUR-APP.vercel.app/api/ymotAddText
+api_000=new_id,yes,10,1,10,HebrewKeyboard,no,no,no,no,no,no,no,no,yes
+api_001=new_content,yes,100,1,10,HebrewKeyboard,no,no,no,no,no,no,no,no,yes</pre>
+                    </div>
+                </div>
+
+                <div class="bg-white/5 p-4 rounded-xl">
+                    <h4 class="text-blue-400 font-bold mb-3">שלוחה לשמיעת נתונים</h4>
+                    <div class="code-block text-xs">
+                        <pre>type=api
+api_link=https://YOUR-APP.vercel.app/api/ymotGetText
+api_000=id_to_search,yes,10,1,10,HebrewKeyboard,no,no,no,no,no,no,no,no,yes</pre>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 p-4 bg-red-500/10 border-r-4 border-red-500 rounded text-sm text-red-200">
+                <b>חשוב:</b> החליפו את הקישור בכתובת שקיבלתם מ-Vercel!
+            </div>
         </div>
+
+        <!-- Footer / Credit -->
+        <footer class="mt-20 text-center border-t border-white/10 pt-12 pb-8 animate__animated animate__fadeIn">
+            <p class="text-slate-500 text-sm mb-4">בס"ד | המדריך מעודכן לשנת תשפ"ו</p>
+            <div class="flex flex-col items-center gap-2">
+                <div class="text-lg font-bold text-blue-400">נבנה על ידי לב טוב</div>
+                <a href="mailto:myylbwt@gmail.com" class="text-slate-400 hover:text-white transition-colors">myylbwt@gmail.com</a>
+            </div>
+        </footer>
+
     </div>
 
     <script>
-        // Initialize Lucide Icons
         lucide.createIcons();
-
+        
         function copyCode(btn) {
             const pre = btn.nextElementSibling;
             const text = pre.innerText;
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand("copy");
-            document.body.removeChild(textArea);
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
             
-            const originalText = btn.innerText;
+            const original = btn.innerText;
             btn.innerText = "הועתק! ✓";
             btn.style.backgroundColor = "#10b981";
             setTimeout(() => {
-                btn.innerText = originalText;
-                btn.style.backgroundColor = "#6366f1";
+                btn.innerText = original;
+                btn.style.backgroundColor = "#3b82f6";
             }, 2000);
         }
     </script>
