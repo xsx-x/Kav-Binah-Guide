@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מדריך הקמת מערכת ימות המשיח & Google Sheets</title>
+    <title>מדריך מערכת ימות המשיח & בינה מלאכותית</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -18,9 +18,9 @@
 
         body {
             font-family: 'Assistant', sans-serif;
-            background: linear-gradient(-45deg, #1e293b, #334155, #1e293b, #0f172a);
+            background: linear-gradient(-45deg, #0f172a, #1e293b, #0f172a, #020617);
             background-size: 400% 400%;
-            animation: gradientBG 12s ease infinite;
+            animation: gradientBG 15s ease infinite;
             min-height: 100vh;
             color: #f1f5f9;
         }
@@ -33,9 +33,10 @@
 
         .glass-card {
             background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             margin-bottom: 2rem;
@@ -44,7 +45,7 @@
         .glass-card:hover {
             transform: translateY(-5px);
             background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(59, 130, 246, 0.4);
+            border-color: rgba(59, 130, 246, 0.3);
         }
 
         .code-block {
@@ -87,6 +88,12 @@
             font-weight: 800; color: white;
             box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
             flex-shrink: 0;
+            font-size: 1.2rem;
+        }
+
+        .step-num.ai-step {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
         }
 
         .dictionary-item {
@@ -94,6 +101,11 @@
             border-right: 3px solid #10b981;
             padding: 0.75rem;
             border-radius: 0 8px 8px 0;
+        }
+        
+        .dictionary-item.ai-dict {
+            background: rgba(139, 92, 246, 0.1);
+            border-right: 3px solid #8b5cf6;
         }
 
         .click-guide {
@@ -110,10 +122,68 @@
             border-radius: 0 12px 12px 0;
             margin: 1.5rem 0;
         }
+        
+        .highlight-box.ai-highlight {
+            background: rgba(139, 92, 246, 0.1);
+            border-right: 4px solid #8b5cf6;
+        }
+
+        /* Tabs Styling */
+        .tab-btn {
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid transparent;
+        }
+
+        .tab-btn.active-basic {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+        }
+
+        .tab-btn.active-ai {
+            background: rgba(139, 92, 246, 0.2);
+            color: #a78bfa;
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+        }
+
+        .tab-btn.inactive {
+            background: rgba(255, 255, 255, 0.05);
+            color: #94a3b8;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .tab-btn.inactive:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #f1f5f9;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
     </style>
 </head>
 <body class="py-12 px-4 selection:bg-blue-500/30">
@@ -121,158 +191,103 @@
     <div class="max-w-4xl mx-auto">
         
         <!-- Hero Header -->
-        <header class="text-center mb-16 animate__animated animate__fadeIn">
-            <div class="inline-flex p-4 bg-blue-500/10 rounded-3xl mb-6 animate__animated animate__pulse animate__infinite">
-                <i data-lucide="refresh-cw" class="w-12 h-12 text-blue-400"></i>
+        <header class="text-center mb-10 animate__animated animate__fadeIn">
+            <div class="inline-flex p-4 bg-slate-800/50 rounded-3xl mb-6 shadow-xl border border-white/5">
+                <i data-lucide="phone-call" class="w-10 h-10 text-blue-400"></i>
+                <i data-lucide="arrow-left-right" class="w-6 h-6 text-slate-500 mx-3 self-center"></i>
+                <i data-lucide="bot" class="w-10 h-10 text-purple-400"></i>
             </div>
-            <h1 class="text-5xl md:text-6xl font-black mb-6 tracking-tight">
-                סנכרון <span class="text-blue-400">ימות המשיח</span><br>עם Google Sheets
+            <h1 class="text-4xl md:text-6xl font-black mb-4 tracking-tight">
+                חיבור <span class="text-blue-400">ימות המשיח</span><br>למערכות מתקדמות
             </h1>
             <p class="text-xl text-slate-400 max-w-2xl mx-auto font-light leading-relaxed">
-                מדריך מפורט למתחילים - פריסת מערכת מקצה לקצה <br>כולל הסברים בעברית וקטעי קוד מוכנים.
+                המדריך השלם למתחילים - מאיסוף נתונים פשוט ועד שיח חכם עם בינה מלאכותית (AI) דרך הטלפון.
             </p>
         </header>
 
-        <!-- Dictionary (מילון למתחילים) -->
-        <section class="glass-card p-8 mb-12 animate__animated animate__fadeInLeft">
-            <div class="flex items-center gap-3 mb-6">
-                <i data-lucide="languages" class="text-emerald-400"></i>
-                <h2 class="text-2xl font-bold">מילון מונחים (למי שלא יודע אנגלית)</h2>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-                <div class="dictionary-item"><b>Deploy:</b> הפעלה של המערכת לאוויר.</div>
-                <div class="dictionary-item"><b>Repository:</b> תיקיית הפרויקט בגיטאהב.</div>
-                <div class="dictionary-item"><b>Settings:</b> הגדרות.</div>
-                <div class="dictionary-item"><b>Create:</b> יצירה של משהו חדש.</div>
-                <div class="dictionary-item"><b>Keys:</b> מפתחות אבטחה.</div>
-                <div class="dictionary-item"><b>Value:</b> הערך שצריך להכניס.</div>
-            </div>
-        </section>
-
-        <!-- Step 1 -->
-        <div class="glass-card p-8 animate__animated animate__fadeInUp">
-            <div class="flex items-center gap-4 mb-6">
-                <div class="step-num">01</div>
-                <h3 class="text-2xl font-bold">הכנת גיליון גוגל (Sheets)</h3>
-            </div>
-            <ol class="space-y-4 text-slate-300 mr-4 list-decimal list-inside">
-                <li>פתחו גיליון Google Sheets חדש.</li>
-                <li>בשורה 1 כתבו: <span class="text-white font-mono bg-white/10 px-2 rounded">ID</span> במשבצת הראשונה, ו-<span class="text-white font-mono bg-white/10 px-2 rounded">Content</span> בשנייה.</li>
-                <li>העתיקו מהכתובת למעלה את ה-ID של הגיליון (זהו רצף האותיות הארוך שבין ה-/d/ לבין ה-/edit). שמרו אותו בצד.</li>
-            </ol>
+        <!-- Tabs Navigation -->
+        <div class="flex flex-col sm:flex-row justify-center gap-4 mb-12 animate__animated animate__fadeInUp">
+            <button onclick="switchTab('basic')" id="btn-basic" class="tab-btn active-basic">
+                <i data-lucide="database" class="w-5 h-5"></i>
+                מדריך בסיסי (שמירת נתונים)
+            </button>
+            <button onclick="switchTab('ai')" id="btn-ai" class="tab-btn inactive">
+                <i data-lucide="brain-circuit" class="w-5 h-5"></i>
+                מדריך מתקדם (צ'אט AI)
+            </button>
         </div>
 
-        <!-- Step 2 -->
-        <div class="glass-card p-8 animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
-            <div class="flex items-center gap-4 mb-6">
-                <div class="step-num">02</div>
-                <h3 class="text-2xl font-bold">הגדרות Google Cloud (חיבור הרובוט)</h3>
-            </div>
-            <div class="highlight-box text-slate-200 text-sm leading-relaxed mb-4">
-                כאן אנחנו יוצרים "חשבון שירות" (רובוט) שיוכל לכתוב בגיליון שלכם.
-            </div>
-            <ol class="space-y-3 text-slate-300 mr-4 list-decimal list-inside">
-                <li>היכנסו ל-Google Cloud Console וצרו פרויקט חדש.</li>
-                <li>חפשו <b>Google Sheets API</b> ולחצו על <span class="click-guide">Enable</span>.</li>
-                <li>תחת <b>IAM & Admin</b> עברו ל-<b>Service Accounts</b> וצרו חשבון חדש.</li>
-                <li>בלשונית <span class="click-guide">Keys</span> לחצו על <b>Add Key</b> ואז <b>Create New Key</b> בפורמט <b>JSON</b>.</li>
-                <li><b>חשוב:</b> קובץ יירד למחשב. פתחו אותו בכתבן (Notepad) - נצטרך את כל מה שכתוב בו ל-Vercel.</li>
-                <li>העתיקו את כתובת המייל של החשבון שיצרתם, לכו לגיליון שלכם ולחצו על "שיתוף" (Share) והוסיפו את המייל הזה כ-Editor.</li>
-            </ol>
-        </div>
-
-        <!-- Step 3: THE CODE (GitHub) -->
-        <div class="glass-card p-8 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
-            <div class="flex items-center gap-4 mb-8">
-                <div class="step-num">03</div>
-                <h3 class="text-2xl font-bold">העלאת הקוד ל-GitHub</h3>
-            </div>
-            <p class="text-slate-300 mb-6">צרו Repository חדש בגיטאהב והעלו לתוכו את הקבצים הבאים (שימו לב לשמות המדויקים):</p>
-
-            <div class="space-y-12">
-                <!-- public/index.html -->
-                <div>
-                    <div class="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
-                        <span class="text-blue-400 font-mono text-sm flex items-center gap-2">
-                            <i data-lucide="file-code" class="w-4 h-4"></i> public/index.html
-                        </span>
-                    </div>
-                    <div class="code-block">
-                        <button class="copy-btn" onclick="copyCode(this)">העתק</button>
-                        <pre>&lt;!DOCTYPE html&gt;
-&lt;html lang="he" dir="rtl"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-    &lt;title&gt;מערכת ניהול טקסטים - ימות המשיח&lt;/title&gt;
-    &lt;style&gt;
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .container { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
-        h2 { text-align: center; color: #333; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
-        input[type="text"], textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-family: inherit; }
-        textarea { height: 120px; resize: vertical; }
-        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; transition: background-color 0.3s; }
-        button:hover { background-color: #0056b3; }
-        #message { margin-top: 15px; padding: 10px; border-radius: 5px; text-align: center; display: none; }
-        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-    &lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;div class="container"&gt;
-    &lt;h2&gt;הוספת טקסט למערכת&lt;/h2&gt;
-    &lt;div class="form-group"&gt;
-        &lt;label for="textId"&gt;מזהה טקסט (ID):&lt;/label&gt;
-        &lt;input type="text" id="textId" placeholder="הקלד מזהה ייחודי..."&gt;
-    &lt;/div&gt;
-    &lt;div class="form-group"&gt;
-        &lt;label for="textContent"&gt;תוכן הטקסט:&lt;/label&gt;
-        &lt;textarea id="textContent" placeholder="הקלד כאן את הטקסט..."&gt;&lt;/textarea&gt;
-    &lt;/div&gt;
-    &lt;button onclick="submitText()"&gt;שמור בגיליון&lt;/button&gt;
-    &lt;div id="message"&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;script&gt;
-    async function submitText() {
-        const idInput = document.getElementById('textId').value;
-        const contentInput = document.getElementById('textContent').value;
-        const messageDiv = document.getElementById('message');
-        if (!idInput || !contentInput) { showMessage('נא למלא את כל השדות!', 'error'); return; }
-        try {
-            const response = await fetch('/api/addText', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: idInput, content: contentInput })
-            });
-            const result = await response.json();
-            if (response.ok) {
-                showMessage('הטקסט נשמר בהצלחה!', 'success');
-                document.getElementById('textId').value = ''; document.getElementById('textContent').value = '';
-            } else { showMessage('שגיאה: ' + result.error, 'error'); }
-        } catch (error) { showMessage('שגיאת תקשורת עם השרת.', 'error'); }
-    }
-    function showMessage(text, type) {
-        const m = document.getElementById('message');
-        m.textContent = text; m.className = type; m.style.display = 'block';
-    }
-&lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</pre>
-                    </div>
+        <!-- ========================================== -->
+        <!-- TAB 1: BASIC GUIDE (Original Content)      -->
+        <!-- ========================================== -->
+        <div id="section-basic" class="content-section active">
+            
+            <section class="glass-card p-8 mb-12">
+                <div class="flex items-center gap-3 mb-6">
+                    <i data-lucide="languages" class="text-emerald-400"></i>
+                    <h2 class="text-2xl font-bold">מילון מונחים למתחילים</h2>
                 </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+                    <div class="dictionary-item"><b>Deploy:</b> הפעלה של המערכת לאוויר.</div>
+                    <div class="dictionary-item"><b>Repository:</b> תיקיית הפרויקט בגיטאהב.</div>
+                    <div class="dictionary-item"><b>Settings:</b> הגדרות.</div>
+                    <div class="dictionary-item"><b>Create:</b> יצירה של משהו חדש.</div>
+                    <div class="dictionary-item"><b>Keys:</b> מפתחות אבטחה.</div>
+                    <div class="dictionary-item"><b>Value:</b> הערך שצריך להכניס.</div>
+                </div>
+            </section>
 
-                <!-- server.js -->
-                <div>
-                    <div class="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
-                        <span class="text-blue-400 font-mono text-sm flex items-center gap-2">
-                            <i data-lucide="server" class="w-4 h-4"></i> server.js
-                        </span>
-                    </div>
-                    <div class="code-block">
-                        <button class="copy-btn" onclick="copyCode(this)">העתק</button>
-                        <pre>const express = require('express');
+            <!-- Step 1 -->
+            <div class="glass-card p-8">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="step-num">01</div>
+                    <h3 class="text-2xl font-bold">הכנת גיליון גוגל (Sheets)</h3>
+                </div>
+                <ol class="space-y-4 text-slate-300 mr-4 list-decimal list-inside">
+                    <li>פתחו גיליון Google Sheets חדש.</li>
+                    <li>בשורה 1 כתבו: <span class="text-white font-mono bg-white/10 px-2 rounded">ID</span> במשבצת הראשונה, ו-<span class="text-white font-mono bg-white/10 px-2 rounded">Content</span> בשנייה.</li>
+                    <li>העתיקו מהכתובת למעלה את ה-ID של הגיליון (זהו רצף האותיות הארוך שבין ה-/d/ לבין ה-/edit). שמרו אותו בצד.</li>
+                </ol>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="glass-card p-8">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="step-num">02</div>
+                    <h3 class="text-2xl font-bold">הגדרות Google Cloud (חיבור הרובוט)</h3>
+                </div>
+                <div class="highlight-box text-slate-200 text-sm leading-relaxed mb-4">
+                    כאן אנחנו יוצרים "חשבון שירות" (רובוט) שיוכל לכתוב בגיליון שלכם.
+                </div>
+                <ol class="space-y-3 text-slate-300 mr-4 list-decimal list-inside">
+                    <li>היכנסו ל-Google Cloud Console וצרו פרויקט חדש.</li>
+                    <li>חפשו <b>Google Sheets API</b> ולחצו על <span class="click-guide">Enable</span>.</li>
+                    <li>תחת <b>IAM & Admin</b> עברו ל-<b>Service Accounts</b> וצרו חשבון חדש.</li>
+                    <li>בלשונית <span class="click-guide">Keys</span> לחצו על <b>Add Key</b> ואז <b>Create New Key</b> בפורמט <b>JSON</b>.</li>
+                    <li><b>חשוב:</b> קובץ יירד למחשב. פתחו אותו בכתבן (Notepad) - נצטרך את כל מה שכתוב בו ל-Vercel.</li>
+                    <li>העתיקו את כתובת המייל של החשבון שיצרתם, לכו לגיליון שלכם ולחצו על "שיתוף" (Share) והוסיפו את המייל הזה כ-Editor.</li>
+                </ol>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="glass-card p-8">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="step-num">03</div>
+                    <h3 class="text-2xl font-bold">העלאת הקוד ל-GitHub</h3>
+                </div>
+                <p class="text-slate-300 mb-6">צרו Repository חדש בגיטאהב והעלו לתוכו את הקבצים הבאים (שימו לב לשמות המדויקים):</p>
+
+                <div class="space-y-8">
+                    <!-- server.js -->
+                    <div>
+                        <div class="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
+                            <span class="text-blue-400 font-mono text-sm flex items-center gap-2">
+                                <i data-lucide="server" class="w-4 h-4"></i> server.js
+                            </span>
+                        </div>
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCode(this)">העתק</button>
+                            <pre>const express = require('express');
 const cors = require('cors');
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 const { JWT } = require('google-auth-library');
@@ -302,31 +317,6 @@ async function getDoc() {
     return doc;
 }
 
-app.all('/api/addText', async (req, res) => {
-    try {
-        const id = req.body.id || req.query.id;
-        const content = req.body.content || req.query.content;
-        if (!id || !content) return res.status(400).json({ error: "חובה להזין מזהה ותוכן" });
-        const doc = await getDoc();
-        const sheet = doc.sheetsByIndex[0];
-        await sheet.addRow({ ID: id, Content: content });
-        res.json({ success: true, message: "הטקסט נשמר בהצלחה!" });
-    } catch (error) { res.status(500).json({ error: error.message }); }
-});
-
-app.get('/api/getText', async (req, res) => {
-    try {
-        const { id } = req.query;
-        if (!id) return res.status(400).json({ error: "לא נשלח מזהה" });
-        const doc = await getDoc();
-        const sheet = doc.sheetsByIndex[0];
-        const rows = await sheet.getRows();
-        const row = rows.find(r => r.get('ID') === String(id));
-        if (row) res.json({ id: row.get('ID'), content: row.get('Content') });
-        else res.status(404).json({ error: "הטקסט לא נמצא" });
-    } catch (error) { res.status(500).json({ error: error.message }); }
-});
-
 app.all('/api/ymotAddText', async (req, res) => {
     try {
         const id = req.query.new_id;
@@ -355,14 +345,15 @@ app.get('/api/ymotGetText', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 module.exports = app;</pre>
+                        </div>
                     </div>
-                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <span class="text-blue-400 font-mono text-sm block mb-2">package.json</span>
-                        <div class="code-block text-xs">
-                            <pre>{
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <span class="text-blue-400 font-mono text-sm block mb-2">package.json</span>
+                            <div class="code-block text-xs">
+                                <button class="copy-btn" onclick="copyCode(this)">העתק</button>
+                                <pre>{
   "name": "ymot-texts-api",
   "version": "1.0.0",
   "main": "server.js",
@@ -374,72 +365,365 @@ module.exports = app;</pre>
     "google-spreadsheet": "^4.1.1"
   }
 }</pre>
+                            </div>
                         </div>
-                    </div>
-                    <div>
-                        <span class="text-blue-400 font-mono text-sm block mb-2">vercel.json</span>
-                        <div class="code-block text-xs">
-                            <pre>{
+                        <div>
+                            <span class="text-blue-400 font-mono text-sm block mb-2">vercel.json</span>
+                            <div class="code-block text-xs">
+                                <button class="copy-btn" onclick="copyCode(this)">העתק</button>
+                                <pre>{
   "version": 2,
   "builds": [{ "src": "server.js", "use": "@vercel/node" }],
   "rewrites": [{ "source": "/(.*)", "destination": "/server.js" }]
 }</pre>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Step 4 -->
-        <div class="glass-card p-8 animate__animated animate__fadeInUp">
-            <div class="flex items-center gap-4 mb-6">
-                <div class="step-num">04</div>
-                <h3 class="text-2xl font-bold">הפצה ב-Vercel (דיפלוי)</h3>
+            <!-- Step 4 -->
+            <div class="glass-card p-8">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="step-num">04</div>
+                    <h3 class="text-2xl font-bold">הפצה ב-Vercel (דיפלוי)</h3>
+                </div>
+                <ol class="space-y-4 text-slate-300 mr-4 list-decimal list-inside">
+                    <li>התחברו ל-Vercel עם חשבון ה-GitHub שלכם.</li>
+                    <li>לחצו על <span class="click-guide">Add New Project</span> וייבאו את המאגר שיצרתם.</li>
+                    <li>לפני הלחיצה על Deploy, היכנסו ל-<b>Environment Variables</b> והוסיפו 2 סודות:
+                        <ul class="list-disc list-inside mr-8 mt-2 space-y-2">
+                            <li><code class="text-white">SHEET_ID</code> : המזהה מהשלב הראשון.</li>
+                            <li><code class="text-white">GOOGLE_SERVICE_ACCOUNT</code> : כל הטקסט שמופיע בקובץ ה-JSON (המפתח).</li>
+                        </ul>
+                    </li>
+                    <li>לחצו <span class="click-guide">Deploy</span>. בסיום תקבלו כתובת אתר (למשל: <span class="text-blue-400 font-mono">my-api.vercel.app</span>).</li>
+                </ol>
             </div>
-            <ol class="space-y-4 text-slate-300 mr-4 list-decimal list-inside">
-                <li>התחברו ל-Vercel עם חשבון ה-GitHub שלכם.</li>
-                <li>לחצו על <span class="click-guide">Add New Project</span> וייבאו את המאגר שיצרתם.</li>
-                <li>לפני הלחיצה על Deploy, היכנסו ל-<b>Environment Variables</b> והוסיפו 2 סודות:
-                    <ul class="list-disc list-inside mr-8 mt-2 space-y-2">
-                        <li><code class="text-white">SHEET_ID</code> : המזהה מהשלב הראשון.</li>
-                        <li><code class="text-white">GOOGLE_SERVICE_ACCOUNT</code> : כל הטקסט שמופיע בקובץ ה-JSON (המפתח).</li>
-                    </ul>
-                </li>
-                <li>לחצו <span class="click-guide">Deploy</span>. בסיום תקבלו כתובת אתר (למשל: <span class="text-blue-400 font-mono">my-api.vercel.app</span>).</li>
-            </ol>
-        </div>
 
-        <!-- Step 5 -->
-        <div class="glass-card p-8 animate__animated animate__fadeInUp">
-            <div class="flex items-center gap-4 mb-6">
-                <div class="step-num">05</div>
-                <h3 class="text-2xl font-bold">הגדרת השלוחה בימות המשיח</h3>
-            </div>
-            <p class="text-slate-300 mb-6 italic">עברו לניהול הקו שלכם והגדירו בקובץ ext.ini:</p>
-            
-            <div class="space-y-6">
-                <div class="bg-white/5 p-4 rounded-xl">
-                    <h4 class="text-blue-400 font-bold mb-3">שלוחה להכנסת נתונים (API)</h4>
-                    <div class="code-block text-xs">
-                        <pre>type=api
+            <!-- Step 5 -->
+            <div class="glass-card p-8">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="step-num">05</div>
+                    <h3 class="text-2xl font-bold">הגדרת השלוחה בימות המשיח</h3>
+                </div>
+                <p class="text-slate-300 mb-6 italic">עברו לניהול הקו שלכם והגדירו בקובץ ext.ini:</p>
+                
+                <div class="space-y-6">
+                    <div class="bg-white/5 p-4 rounded-xl">
+                        <h4 class="text-blue-400 font-bold mb-3">שלוחה להכנסת נתונים (API)</h4>
+                        <div class="code-block text-xs">
+                            <button class="copy-btn" onclick="copyCode(this)">העתק</button>
+                            <pre>type=api
 api_link=https://YOUR-APP.vercel.app/api/ymotAddText
 api_000=new_id,yes,10,1,10,HebrewKeyboard,no,no,no,no,no,no,no,no,yes
 api_001=new_content,yes,100,1,10,HebrewKeyboard,no,no,no,no,no,no,no,no,yes</pre>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/5 p-4 rounded-xl">
+                        <h4 class="text-blue-400 font-bold mb-3">שלוחה לשמיעת נתונים</h4>
+                        <div class="code-block text-xs">
+                            <button class="copy-btn" onclick="copyCode(this)">העתק</button>
+                            <pre>type=api
+api_link=https://YOUR-APP.vercel.app/api/ymotGetText
+api_000=id_to_search,yes,10,1,10,HebrewKeyboard,no,no,no,no,no,no,no,no,yes</pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 p-4 bg-red-500/10 border-r-4 border-red-500 rounded text-sm text-red-200">
+                    <b>חשוב:</b> החליפו את הקישור <code class="bg-black/30 px-1 rounded">YOUR-APP.vercel.app</code> בכתובת שקיבלתם מ-Vercel!
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: ADVANCED GUIDE (AI Integration)     -->
+        <!-- ========================================== -->
+        <div id="section-ai" class="content-section">
+            
+            <div class="glass-card p-8 mb-12 border-purple-500/30">
+                <h2 class="text-3xl font-black text-purple-400 mb-4">איך זה עובד?</h2>
+                <p class="text-slate-300 leading-relaxed mb-6">
+                    במערכת הזו, המאזין יכנס לשלוחה אחת ויקליד שאלה (למשל: "מי היה הרמבם?"). 
+                    השאלה נשלחת לגיליון גוגל שלכם. ברגע שהשאלה נוחתת בגיליון, מופעל קוד סודי ששולח את השאלה למוח של הבינה המלאכותית (Gemini).
+                    הבינה המלאכותית כותבת תשובה בגיליון, והמאזין עובר לשלוחה השנייה כדי לשמוע את התשובה שמקריא לו הרובוט של ימות המשיח!
+                </p>
+                <div class="flex flex-wrap gap-4 mt-6">
+                    <div class="dictionary-item ai-dict flex-1"><b>AI (בינה מלאכותית):</b> מחשב חכם שיודע לקרוא טקסט ולענות תשובות כמו בן אדם. אנו נשתמש במערכת בשם Gemini של חברת גוגל.</div>
+                    <div class="dictionary-item ai-dict flex-1"><b>API Key:</b> מפתח סודי. כמו סיסמה מיוחדת שמאפשרת לקוד שלנו "לדבר" עם הבינה המלאכותית.</div>
+                    <div class="dictionary-item ai-dict flex-1"><b>Apps Script:</b> המקום מאחורי הקלעים של גוגל שיטס שבו אנחנו שמים קוד שעושה פעולות אוטומטיות.</div>
+                    <div class="dictionary-item ai-dict flex-1"><b>Trigger (טריגר):</b> "הדק". הגדרה שאומרת לגוגל: "ברגע שקורה משהו (למשל התווספה שאלה), תפעיל את הקוד מיד!".</div>
+                </div>
+            </div>
+
+            <!-- AI Step 1 -->
+            <div class="glass-card p-8">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="step-num ai-step">01</div>
+                    <h3 class="text-2xl font-bold">הכנת גיליון גוגל והטמעת קוד הבינה</h3>
+                </div>
+                <div class="highlight-box ai-highlight text-slate-200 text-sm leading-relaxed mb-6">
+                    בשלב זה נכניס את ה"מוח" לתוך גיליון האקסל שלנו כדי שיענה על שאלות שמגיעות.
+                </div>
+                <ol class="space-y-4 text-slate-300 mr-4 list-decimal list-inside">
+                    <li>פתחו גיליון Google Sheets חדש, ושנו את השם של הגיליון למטה ל: <b>מענה AI</b>.</li>
+                    <li>הכינו עמודות בשורה הראשונה: בעמודה A כתבו "זמן", ב-B "מספר שורה", ב-C "טקסט השאלה", ב-D "תשובת AI מלאה", וב-E "טקסט מסונן".</li>
+                    <li>בתפריט העליון לחצו על <b>Extensions (תוספים)</b> ואז על <b>Apps Script</b>.</li>
+                    <li>יפתח לכם חלון קוד. תמחקו את כל מה שכתוב שם, והדביקו את הקוד הבא:</li>
+                </ol>
+
+                <div class="code-block mt-4 mb-6">
+                    <button class="copy-btn" onclick="copyCode(this)">העתק קוד ל-Apps Script</button>
+                    <pre>
+// הכניסו כאן את מפתח ה-API שלכם מ-Google AI Studio
+const GEMINI_API_KEY = "הכניסו_כאן_את_המפתח_שלכם"; 
+
+function processNewQuestions(e) {
+  // פונקציה זו תופעל בכל פעם ש-Vercel מכניס שאלה חדשה
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("מענה AI");
+  if (!sheet) return;
+  
+  const lastRow = sheet.getLastRow();
+  // אם אין שאלות, לא לעשות כלום
+  if (lastRow <= 1) return; 
+  
+  // נקרא את השאלה האחרונה שנכנסה
+  const questionRange = sheet.getRange(lastRow, 3); // עמודה C היא השאלה
+  const answerRange = sheet.getRange(lastRow, 4); // עמודה D היא התשובה המלאה
+  const cleanedAnswerRange = sheet.getRange(lastRow, 5); // עמודה E היא התשובה הנקייה
+  
+  const question = questionRange.getValue();
+  const currentAnswer = answerRange.getValue();
+  
+  // אם יש שאלה ועדיין אין תשובה - נפעיל את ה-AI
+  if (question && !currentAnswer) {
+    try {
+      const prompt = "אתה עוזר חכם. ענה בקצרה ובשפה ברורה על השאלה הבאה: " + question;
+      const aiResponseText = callGemini(prompt);
+      
+      const cleanedText = cleanText(aiResponseText); // ניקוי טקסט לימות המשיח
+      
+      // כתיבת התשובות חזרה לגיליון
+      answerRange.setValue(aiResponseText);
+      cleanedAnswerRange.setValue(cleanedText);
+      
+      logEntry(lastRow, prompt, "הצלחה", "תשובה התקבלה", aiResponseText);
+      
+    } catch (error) {
+      answerRange.setValue("שגיאה בקבלת תשובה.");
+      cleanedAnswerRange.setValue("שגיאה.");
+      logEntry(lastRow, question, "שגיאה", error.toString(), "");
+    }
+  }
+}
+
+// התחברות למוח של גוגל - Gemini
+function callGemini(prompt) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+  const payload = { "contents": [{ "parts": [{ "text": prompt }] }] };
+  
+  const options = {
+    method: "post",
+    contentType: "application/json",
+    payload: JSON.stringify(payload)
+  };
+  
+  const response = UrlFetchApp.fetch(url, options);
+  const json = JSON.parse(response.getContentText());
+  return json.candidates[0].content.parts[0].text;
+}
+
+// מנקה כוכביות וסימנים כדי שהרובוט הטלפוני יקריא ברור
+function cleanText(text) {
+  return text.replace(/[*#_`]/g, "").trim();
+}
+
+function logEntry(rowNumber, prompt, status, response, aiText) {
+  let logSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Logs");
+  if (!logSheet) { logSheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("Logs"); }
+  logSheet.appendRow([new Date(), rowNumber, prompt, status, response, aiText]);
+}
+                    </pre>
+                </div>
+
+                <div class="p-4 bg-orange-500/20 border-r-4 border-orange-500 rounded text-sm text-orange-200 mt-4 mb-4">
+                    <b>מאיפה מביאים API Key?</b> 
+                    חפשו בגוגל "Google AI Studio API Key", התחברו עם חשבון הגוגל שלכם, לחצו על "Create API Key" והעתיקו את הרצף הארוך. את הרצף הזה הדביקו בתוך המרכאות בשורה הראשונה של הקוד למעלה במקום הטקסט "הכניסו_כאן_את_המפתח_שלכם".
+                </div>
+
+                <h4 class="text-xl font-bold mt-8 mb-4 text-purple-300">הגדרת טריגר (הדק אוטומטי) - קריטי מאוד!</h4>
+                <ol class="space-y-4 text-slate-300 mr-4 list-decimal list-inside">
+                    <li>בצד שמאל של מסך ה-Apps Script, חפשו סמל של <b>שעון מעורר</b> (Triggers / מפעילים).</li>
+                    <li>לחצו על הכפתור הכחול למטה למטה: <b>Add Trigger (הוספת מפעיל)</b>.</li>
+                    <li>בחלון שיפתח, הגדירו כך:
+                        <ul class="list-disc list-inside mr-8 mt-2 space-y-1 text-purple-200">
+                            <li>בחר פונקציה: <code class="bg-black/30 px-1 rounded">processNewQuestions</code></li>
+                            <li>בחר מקור אירוע: <code class="bg-black/30 px-1 rounded">מגיליון אלקטרוני (From spreadsheet)</code></li>
+                            <li>בחר סוג אירוע: <code class="bg-black/30 px-1 rounded">בעת שינוי (On change)</code></li>
+                        </ul>
+                    </li>
+                    <li>לחצו שמור. גוגל יבקש מכם אישור אבטחה (לחצו Advanced -> Go to script -> Allow).</li>
+                </ol>
+            </div>
+
+            <!-- AI Step 2 -->
+            <div class="glass-card p-8">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="step-num ai-step">02</div>
+                    <h3 class="text-2xl font-bold">העלאת קוד השרת ל-GitHub</h3>
+                </div>
+                <p class="text-slate-300 mb-6">
+                    עכשיו נכין את קוד השרת (server.js) שיקבל את ההקשה מימות המשיח ויעביר אותה לגיליון.
+                    שימו לב שקוד זה שונה מהמדריך הבסיסי ומותאם למערכת הבינה המלאכותית שלנו.
+                </p>
+
+                <div>
+                    <span class="text-purple-400 font-mono text-sm block mb-2">server.js</span>
+                    <div class="code-block text-xs">
+                        <button class="copy-btn" onclick="copyCode(this)">העתק</button>
+                        <pre>const express = require('express');
+const cors = require('cors');
+const { GoogleSpreadsheet } = require('google-spreadsheet');
+const { JWT } = require('google-auth-library');
+const path = require('path');
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+const SHEET_ID = process.env.SHEET_ID;
+const GOOGLE_SERVICE_ACCOUNT = process.env.GOOGLE_SERVICE_ACCOUNT;
+
+async function getDoc() {
+    if (!GOOGLE_SERVICE_ACCOUNT || !SHEET_ID) {
+        throw new Error("שגיאת קונפיגורציה: חסרים סודות במשתני הסביבה");
+    }
+    const credentials = JSON.parse(GOOGLE_SERVICE_ACCOUNT);
+    const serviceAccountAuth = new JWT({
+        email: credentials.client_email,
+        key: credentials.private_key,
+        scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
+    const doc = new GoogleSpreadsheet(SHEET_ID, serviceAccountAuth);
+    await doc.loadInfo();
+    return doc;
+}
+
+// שלוחה 1: קבלת השאלה מימות המשיח והכנסתה לגיליון
+app.all('/api/ymotAskAI', async (req, res) => {
+    try {
+        const question = req.query.question_text;
+        const phone = req.query.ApiPhone || "לא ידוע";
+        
+        if (!question) return res.send("id_list_message=t-לא זוהתה הקשה");
+        
+        const doc = await getDoc();
+        const sheet = doc.sheetsByTitle["מענה AI"]; // חובה שהגיליון יקרא כך
+        
+        // מכניסים את השאלה לעמודה C (הגיליון מסדר את העמודות לפי הכותרות)
+        await sheet.addRow({ "זמן": new Date().toLocaleString(), "מספר שורה": phone, "טקסט השאלה": question });
+        
+        res.send("id_list_message=t-שאלתך התקבלה המתן מספר שניות לתשובה");
+    } catch (error) { res.send("id_list_message=t-חלה שגיאה במערכת"); }
+});
+
+// שלוחה 2: חיפוש התשובה הנקייה בגיליון והקראתה
+app.all('/api/ymotReadAI', async (req, res) => {
+    try {
+        const phone = req.query.ApiPhone; // נחפש לפי מספר הטלפון
+        const doc = await getDoc();
+        const sheet = doc.sheetsByTitle["מענה AI"];
+        
+        const rows = await sheet.getRows();
+        // מחפשים מהסוף להתחלה כדי למצוא את השאלה האחרונה של המשתמש הזה
+        let userRow = null;
+        for (let i = rows.length - 1; i >= 0; i--) {
+            if (rows[i].get("מספר שורה") === String(phone)) {
+                userRow = rows[i];
+                break;
+            }
+        }
+        
+        if (userRow && userRow.get("טקסט מסונן")) {
+            const answer = userRow.get("טקסט מסונן");
+            res.send(`id_list_message=t-${answer}`);
+        } else {
+            res.send("id_list_message=t-התשובה עדיין לא מוכנה נסה שוב");
+        }
+    } catch (error) { res.send("id_list_message=t-חלה שגיאה במשיכת התשובה"); }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+module.exports = app;</pre>
+                    </div>
+                </div>
+                
+                <p class="text-slate-300 mt-4 text-sm">
+                    קובץ ה- <code class="text-purple-300">package.json</code> וקובץ ה- <code class="text-purple-300">vercel.json</code> נשארים בדיוק אותו דבר כמו במדריך הבסיסי (לשונית קודמת).
+                </p>
+            </div>
+
+            <!-- AI Step 3 -->
+            <div class="glass-card p-8">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="step-num ai-step">03</div>
+                    <h3 class="text-2xl font-bold">הפצה ב-Vercel (דיפלוי)</h3>
+                </div>
+                <p class="text-slate-300 mb-4">
+                    התהליך זהה לחלוטין למה שלמדנו: מייבאים את המאגר ל-Vercel, שמים את ה-<code>SHEET_ID</code> ואת ה-<code>GOOGLE_SERVICE_ACCOUNT</code>, ומריצים Deploy.
+                </p>
+            </div>
+
+            <!-- AI Step 4 -->
+            <div class="glass-card p-8 border-purple-500/50">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="step-num ai-step">04</div>
+                    <h3 class="text-2xl font-bold">הגדרת השלוחות בימות המשיח</h3>
+                </div>
+                
+                <div class="bg-black/40 p-5 rounded-xl border border-purple-500/20 mb-6">
+                    <h4 class="text-purple-400 font-bold mb-3 text-lg">שלוחה 1 - לשאול את השאלה</h4>
+                    <p class="text-sm text-slate-400 mb-3">
+                        שימו לב: הערך העשירי הושאר ריק כדי לאפשר הקשת טקסט חופשית כבקשתכם, 
+                        והוספנו המתנה ותיבת סימון כדי להרוויח זמן עד שהבינה המלאכותית תסיים לכתוב בגיליון.
+                    </p>
+                    <div class="code-block text-xs">
+                        <button class="copy-btn" onclick="copyCode(this)">העתק</button>
+                        <pre>type=api
+api_link=https://YOUR-APP.vercel.app/api/ymotAskAI
+
+; קבלת הטקסט מהמשתמש - שינוי הערך העשירי לריק כדי לאפשר הקשה
+api_000=question_text,yes,100,1,10,HebrewKeyboard,no,no,no,,no,no,no,no,yes
+
+; קבלת החלטה לגבי תיבת הסימון
+; שינוי זמן המתנה ל-7 שניות, סוג השמעה ל-Digits, וריק בערך העשירי
+api_001=checkbox_choice,yes,1,1,7,Digits,no,no,no,,no,no,no,no,no
+
+api_timeout=20
+api_hangup_send=no</pre>
                     </div>
                 </div>
 
-                <div class="bg-white/5 p-4 rounded-xl">
-                    <h4 class="text-blue-400 font-bold mb-3">שלוחה לשמיעת נתונים</h4>
+                <div class="bg-black/40 p-5 rounded-xl border border-purple-500/20">
+                    <h4 class="text-purple-400 font-bold mb-3 text-lg">שלוחה 2 - לשמוע את תשובת ה-AI</h4>
+                    <p class="text-sm text-slate-400 mb-3">
+                        אחרי שהמאזין חיכה קצת בשלוחה 1, הלקוח יעבור לשלוחה זו (יש להגדיר מעבר אוטומטי בימות המשיח) וישמע את התשובה.
+                    </p>
                     <div class="code-block text-xs">
+                        <button class="copy-btn" onclick="copyCode(this)">העתק</button>
                         <pre>type=api
-api_link=https://YOUR-APP.vercel.app/api/ymotGetText
-api_000=id_to_search,yes,10,1,10,HebrewKeyboard,no,no,no,no,no,no,no,no,yes</pre>
+api_link=https://YOUR-APP.vercel.app/api/ymotReadAI</pre>
                     </div>
                 </div>
+
+                <div class="mt-6 p-4 bg-red-500/10 border-r-4 border-red-500 rounded text-sm text-red-200">
+                    <b>תזכורת חמה:</b> אל תשכחו לשנות את <code class="bg-black/30 px-1 rounded">YOUR-APP.vercel.app</code> לכתובת האמיתית שוורסל נתן לכם!
+                </div>
             </div>
-            <div class="mt-6 p-4 bg-red-500/10 border-r-4 border-red-500 rounded text-sm text-red-200">
-                <b>חשוב:</b> החליפו את הקישור בכתובת שקיבלתם מ-Vercel!
-            </div>
+
         </div>
 
         <!-- Footer / Credit -->
@@ -454,8 +738,34 @@ api_000=id_to_search,yes,10,1,10,HebrewKeyboard,no,no,no,no,no,no,no,no,yes</pre
     </div>
 
     <script>
+        // Initialize Icons
         lucide.createIcons();
         
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            const basicSec = document.getElementById('section-basic');
+            const aiSec = document.getElementById('section-ai');
+            const basicBtn = document.getElementById('btn-basic');
+            const aiBtn = document.getElementById('btn-ai');
+
+            if (tabId === 'basic') {
+                // Show Basic
+                basicSec.classList.add('active');
+                aiSec.classList.remove('active');
+                // Style Buttons
+                basicBtn.className = 'tab-btn active-basic';
+                aiBtn.className = 'tab-btn inactive';
+            } else {
+                // Show AI
+                aiSec.classList.add('active');
+                basicSec.classList.remove('active');
+                // Style Buttons
+                aiBtn.className = 'tab-btn active-ai';
+                basicBtn.className = 'tab-btn inactive';
+            }
+        }
+
+        // Copy Code Logic
         function copyCode(btn) {
             const pre = btn.nextElementSibling;
             const text = pre.innerText;
@@ -468,10 +778,17 @@ api_000=id_to_search,yes,10,1,10,HebrewKeyboard,no,no,no,no,no,no,no,no,yes</pre
             
             const original = btn.innerText;
             btn.innerText = "הועתק! ✓";
-            btn.style.backgroundColor = "#10b981";
+            
+            // Check which tab we are in for the color
+            if(document.getElementById('section-ai').classList.contains('active')) {
+                btn.style.backgroundColor = "#8b5cf6"; // Purple for AI
+            } else {
+                btn.style.backgroundColor = "#10b981"; // Emerald for Basic
+            }
+            
             setTimeout(() => {
                 btn.innerText = original;
-                btn.style.backgroundColor = "#3b82f6";
+                btn.style.backgroundColor = "#3b82f6"; // Back to blue
             }, 2000);
         }
     </script>
